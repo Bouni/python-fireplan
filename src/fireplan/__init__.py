@@ -13,7 +13,7 @@ class Fireplan:
 
     BASE_URL = "https://fireplanapi.azurewebsites.net/api/"
     ALARM_SCHEMA = v.Schema({
-        v.Required("__alarmtext", default=""): str,
+        v.Required("alarmtext", default=""): str,
         v.Required("einsatznrlst", default=""): str,
         v.Required("strasse", default=""): str,
         v.Required("hausnummer", default=""): str,
