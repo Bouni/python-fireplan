@@ -1,6 +1,4 @@
-import sys
 import logging
-from datetime import datetime as dt
 import requests
 import voluptuous as v
 
@@ -12,26 +10,36 @@ logger = logging.getLogger(__name__)
 class Fireplan:
 
     BASE_URL = "https://fireplanapi.azurewebsites.net/api/"
-    ALARM_SCHEMA = v.Schema({
-        v.Required("alarmtext", default=""): str,
-        v.Required("einsatznrlst", default=""): str,
-        v.Required("strasse", default=""): str,
-        v.Required("hausnummer", default=""): str,
-        v.Required("ort", default=""): str,
-        v.Required("ortsteil", default=""): str,
-        v.Required("objektname", default=""): str,
-        v.Required("koordinaten", default=""): v.Any(v.Match(r'^\d+\.\d+,\d+\.\d+$', msg="wrong format, must be like 47.592,8.298"), v.Match(r'^$')),
-        v.Required("einsatzstichwort", default=""): str,
-        v.Required("zusatzinfo", default=""): str,
-        v.Required("sonstiges1", default=""): str,
-        v.Required("sonstiges2", default=""): str,
-        v.Required("RIC", default=""): str,
-        v.Required("SubRIC", default=""): str,
-    })
-    STATUS_SCHEMA = v.Schema({
-        v.Required("FZKennung", default=""): str,
-        v.Required("Status", default=""): str,
-    })
+    ALARM_SCHEMA = v.Schema(
+        {
+            v.Required("alarmtext", default=""): str,
+            v.Required("einsatznrlst", default=""): str,
+            v.Required("strasse", default=""): str,
+            v.Required("hausnummer", default=""): str,
+            v.Required("ort", default=""): str,
+            v.Required("ortsteil", default=""): str,
+            v.Required("objektname", default=""): str,
+            v.Required("koordinaten", default=""): v.Any(
+                v.Match(
+                    r"^\d+\.\d+,\d+\.\d+$",
+                    msg="wrong format, must be like 47.592,8.298",
+                ),
+                v.Match(r"^$"),
+            ),
+            v.Required("einsatzstichwort", default=""): str,
+            v.Required("zusatzinfo", default=""): str,
+            v.Required("sonstiges1", default=""): str,
+            v.Required("sonstiges2", default=""): str,
+            v.Required("RIC", default=""): str,
+            v.Required("SubRIC", default=""): str,
+        }
+    )
+    STATUS_SCHEMA = v.Schema(
+        {
+            v.Required("FZKennung", default=""): str,
+            v.Required("Status", default=""): str,
+        }
+    )
 
     def __init__(self, token):
         self.token = token
