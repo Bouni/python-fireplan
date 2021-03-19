@@ -6,7 +6,7 @@ A python package around the public [fireplan](https://www.fireplan.de/) API.
 
 ## Installation
 
-`pip install git+https://github.com/bouni/python-fireplan.git#egg=python-fireplan`
+`pip install python-fireplan`
 
 ## Usage
 
