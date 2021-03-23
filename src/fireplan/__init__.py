@@ -2,8 +2,6 @@ import logging
 import requests
 import voluptuous as v
 
-logging.basicConfig(level=logging.DEBUG)
-
 logger = logging.getLogger(__name__)
 
 
