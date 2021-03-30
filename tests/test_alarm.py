@@ -35,9 +35,24 @@ def test_alarm_invalid_extra_data(requests_mock, logs):
     )
     fp = fireplan.Fireplan("token")
     r = fp.alarm({"invalid": "ABC"})
-    assert r == None
-    assert requests_mock.called == False
-    assert "extra keys not allowed" in logs.error
+    assert fp.alarm({}) == True
+    assert requests_mock.called == True
+    assert requests_mock.last_request.json() == {
+        "alarmtext": "",
+        "einsatznrlst": "",
+        "strasse": "",
+        "hausnummer": "",
+        "ort": "",
+        "ortsteil": "",
+        "objektname": "",
+        "koordinaten": "",
+        "einsatzstichwort": "",
+        "zusatzinfo": "",
+        "sonstiges1": "",
+        "sonstiges2": "",
+        "RIC": "",
+        "SubRIC": "",
+    }
 
 
 def test_alarm_invalid_data_type(requests_mock, logs):
@@ -45,10 +60,25 @@ def test_alarm_invalid_data_type(requests_mock, logs):
         "https://fireplanapi.azurewebsites.net/api/Alarmierung", text="200"
     )
     fp = fireplan.Fireplan("token")
-    r = fp.alarm({"RIC": 12})
-    assert r == None
-    assert requests_mock.called == False
-    assert "expected str for dictionary value" in logs.error
+    r = fp.alarm({"RIC": 123})
+    assert r == True
+    assert requests_mock.called == True
+    assert requests_mock.last_request.json() == {
+        "alarmtext": "",
+        "einsatznrlst": "",
+        "strasse": "",
+        "hausnummer": "",
+        "ort": "",
+        "ortsteil": "",
+        "objektname": "",
+        "koordinaten": "",
+        "einsatzstichwort": "",
+        "zusatzinfo": "",
+        "sonstiges1": "",
+        "sonstiges2": "",
+        "RIC": "123",
+        "SubRIC": "",
+    }
 
 
 def test_alarm_invalid_coordinates(requests_mock, logs):
@@ -57,9 +87,24 @@ def test_alarm_invalid_coordinates(requests_mock, logs):
     )
     fp = fireplan.Fireplan("token")
     r = fp.alarm({"koordinaten": "55,23 , 45,56"})
-    assert r == None
-    assert requests_mock.called == False
-    assert "wrong format, must be like" in logs.error
+    assert r == True
+    assert requests_mock.called == True
+    assert requests_mock.last_request.json() == {
+        "alarmtext": "",
+        "einsatznrlst": "",
+        "strasse": "",
+        "hausnummer": "",
+        "ort": "",
+        "ortsteil": "",
+        "objektname": "",
+        "koordinaten": "",
+        "einsatzstichwort": "",
+        "zusatzinfo": "",
+        "sonstiges1": "",
+        "sonstiges2": "",
+        "RIC": "",
+        "SubRIC": "",
+    }
 
 
 def test_alarm_valid_data(requests_mock):
@@ -84,8 +129,23 @@ def test_alarm_valid_data(requests_mock):
         "SubRIC": "A",
     }
     assert fp.alarm(data) == True
-    assert requests_mock.called
-    assert requests_mock.last_request.json() == data
+    assert requests_mock.called == True
+    assert requests_mock.last_request.json() == {
+        "alarmtext": "Brand 3 –Brand im Wohnhaus",
+        "einsatznrlst": "321123",
+        "strasse": "Walter-Gropuius-Strasse",
+        "hausnummer": "3",
+        "ort": "München",
+        "ortsteil": "Schwabing",
+        "objektname": "Gebäude Kantine",
+        "koordinaten": "51.3344,65.22223",
+        "einsatzstichwort": "Brand 5",
+        "zusatzinfo": "Brandmeldeanlage",
+        "sonstiges1": "sonstige1",
+        "sonstiges2": "sonstige2",
+        "RIC": "40001",
+        "SubRIC": "A",
+    }
 
 
 def test_alarm_api_error(requests_mock):

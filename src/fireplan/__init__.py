@@ -1,43 +1,13 @@
 import logging
 import requests
-import voluptuous as v
+import cerberus
+from fireplan.schemas import ALARM_SCHEMA, STATUS_SCHEMA
 
 logger = logging.getLogger(__name__)
-
 
 class Fireplan:
 
     BASE_URL = "https://fireplanapi.azurewebsites.net/api/"
-    ALARM_SCHEMA = v.Schema(
-        {
-            v.Required("alarmtext", default=""): str,
-            v.Required("einsatznrlst", default=""): str,
-            v.Required("strasse", default=""): str,
-            v.Required("hausnummer", default=""): str,
-            v.Required("ort", default=""): str,
-            v.Required("ortsteil", default=""): str,
-            v.Required("objektname", default=""): str,
-            v.Required("koordinaten", default=""): v.Any(
-                v.Match(
-                    r"^\d+\.\d+,\d+\.\d+$",
-                    msg="wrong format, must be like 47.592,8.298",
-                ),
-                v.Match(r"^$"),
-            ),
-            v.Required("einsatzstichwort", default=""): str,
-            v.Required("zusatzinfo", default=""): str,
-            v.Required("sonstiges1", default=""): str,
-            v.Required("sonstiges2", default=""): str,
-            v.Required("RIC", default=""): str,
-            v.Required("SubRIC", default=""): str,
-        }
-    )
-    STATUS_SCHEMA = v.Schema(
-        {
-            v.Required("FZKennung", default=""): str,
-            v.Required("Status", default=""): str,
-        }
-    )
 
     def __init__(self, token):
         self.token = token
@@ -45,14 +15,16 @@ class Fireplan:
             "utoken": token,
             "content-type": "application/json",
         }
+        self.validator = cerberus.Validator()
 
     def alarm(self, data):
         url = f"{self.BASE_URL}Alarmierung"
-        try:
-            data = self.ALARM_SCHEMA(data)
-        except Exception as e:
-            logger.error(e)
-            return
+        self.validator.validate(data, ALARM_SCHEMA, update=True)
+        data = self.validator.document
+        self.validator.validate(data, ALARM_SCHEMA)
+        for error in self.validator.errors:
+            logger.warning(f"Fehler in den Alarmdaten, '{error}' ist falsch formatiert und wird daher auf \"\" gesetzt!")
+            data[error] = ""
         r = requests.post(url, json=data, headers=self.headers)
         if r.text == "200":
             logger.info("Alarm erfolgreich gesendet")
@@ -62,10 +34,14 @@ class Fireplan:
 
     def status(self, data):
         url = f"{self.BASE_URL}FMS"
-        try:
-            data = self.STATUS_SCHEMA(data)
-        except Exception as e:
-            logger.error(e)
+        logger.info(f"input data: {data}")
+        valid = self.validator.validate(data, STATUS_SCHEMA)
+        logger.info(f"validation: {valid}")
+        logger.info(f"document: {self.validator.document}")
+        for error in self.validator.errors:
+            logger.warning(f"Fehler in den Statusdaten, der Wert von '{error}' ist ungültig!")
+        if self.validator.errors:
+            logger.error(f"Status übermittlung auf Grund fehlerhafter daten abgebrochen!")
             return
         r = requests.put(url, json=data, headers=self.headers)
         if r.text == "200":
