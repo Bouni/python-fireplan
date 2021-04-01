@@ -44,7 +44,7 @@ ALARM_SCHEMA = {
     "koordinaten": { 
         "type": "string", 
         "default": "",
-        "regex": "^\d+\.\d+,\s?\d+\d.\d+$",
+        "regex": "^\-?\d+\.\d+,\s?\-?\d+\.\d+$",
         "required": True,
         "coerce": str
     },
