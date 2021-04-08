@@ -27,11 +27,11 @@ class Fireplan:
             data[error] = ""
         logger.debug(data)
         r = requests.post(url, json=data, headers=self.headers)
-        logger.debug(r.text)
         if r.text == "200":
             logger.info("Alarm erfolgreich gesendet")
         else:
             logger.error("Fehler beim senden des Alarms")
+            logger.error(r.text)
         return r.text == "200"
 
     def status(self, data):
@@ -47,7 +47,6 @@ class Fireplan:
             return
         logger.debug(data)
         r = requests.put(url, json=data, headers=self.headers)
-        logger.debug(r.text)
         if r.text == "200":
             logger.info("Status erfolgreich gesendet")
         else:
