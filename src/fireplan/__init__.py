@@ -25,7 +25,9 @@ class Fireplan:
         for error in self.validator.errors:
             logger.warning(f"Fehler in den Alarmdaten, '{error}' ist falsch formatiert und wird daher auf \"\" gesetzt!")
             data[error] = ""
+        logger.debug(data)
         r = requests.post(url, json=data, headers=self.headers)
+        logger.debug(r.text)
         if r.text == "200":
             logger.info("Alarm erfolgreich gesendet")
         else:
@@ -43,7 +45,9 @@ class Fireplan:
         if self.validator.errors:
             logger.error(f"Status übermittlung auf Grund fehlerhafter daten abgebrochen!")
             return
+        logger.debug(data)
         r = requests.put(url, json=data, headers=self.headers)
+        logger.debug(r.text)
         if r.text == "200":
             logger.info("Status erfolgreich gesendet")
         else:
