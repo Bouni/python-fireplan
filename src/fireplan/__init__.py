@@ -31,7 +31,8 @@ class Fireplan:
             logger.info("Alarm erfolgreich gesendet")
         else:
             logger.error("Fehler beim senden des Alarms")
-            logger.error(r.text)
+            logger.error(f"Status code: {r.status_code}")
+            logger.error(f"Error text: {r.text}")
         return r.text == "200"
 
     def status(self, data):
@@ -51,5 +52,6 @@ class Fireplan:
             logger.info("Status erfolgreich gesendet")
         else:
             logger.error("Fehler beim senden des Status")
-            logger.error(r.text)
+            logger.error(f"Status code: {r.status_code}")
+            logger.error(f"Error text: {r.text}")
         return r.text == "200"
