@@ -5,17 +5,35 @@ from fireplan.schemas import ALARM_SCHEMA, STATUS_SCHEMA
 
 logger = logging.getLogger(__name__)
 
+
 class Fireplan:
 
     BASE_URL = "https://fireplanapi.azurewebsites.net/api/"
 
-    def __init__(self, token):
-        self.token = token
+    def __init__(self, secret, division):
+        self._secret = secret
+        self._division = division
+        self._token = None
         self.headers = {
-            "utoken": token,
+            "utoken": None,
             "content-type": "application/json",
         }
-        self.validator = cerberus.Validator()
+        self._get_token()
+        self.validator = cerberus.Validator(purge_unknown=True)
+
+    def _get_token(self):
+        url = f"{self.BASE_URL}registerV2"
+        headers = {
+            "cxsecret": self._secret,
+            "abteilung": self._division,
+        }
+        r = requests.get(url, headers=headers)
+        if r.status_code == requests.codes.ok:
+            logger.info(f"User Token erfolgreich generiert!")
+            self.headers["utoken"] = r.text
+        else:
+            logger.error(f"Fehler beim generieren des User Token!")
+            logger.error(r.text)
 
     def alarm(self, data):
         url = f"{self.BASE_URL}Alarmierung"
@@ -23,7 +41,9 @@ class Fireplan:
         data = self.validator.document
         self.validator.validate(data, ALARM_SCHEMA)
         for error in self.validator.errors:
-            logger.warning(f"Fehler in den Alarmdaten, '{error}' ist falsch formatiert und wird daher auf \"\" gesetzt!")
+            logger.warning(
+                f"Fehler in den Alarmdaten, '{error}' ist falsch formatiert und wird daher auf \"\" gesetzt!"
+            )
             data[error] = ""
         logger.debug(data)
         r = requests.post(url, json=data, headers=self.headers)
@@ -42,9 +62,13 @@ class Fireplan:
         logger.info(f"validation: {valid}")
         logger.info(f"document: {self.validator.document}")
         for error in self.validator.errors:
-            logger.warning(f"Fehler in den Statusdaten, der Wert von '{error}' ist ungültig!")
+            logger.warning(
+                f"Fehler in den Statusdaten, der Wert von '{error}' ist ungültig!"
+            )
         if self.validator.errors:
-            logger.error(f"Status übermittlung auf Grund fehlerhafter daten abgebrochen!")
+            logger.error(
+                f"Status übermittlung auf Grund fehlerhafter daten abgebrochen!"
+            )
             return
         logger.debug(data)
         r = requests.put(url, json=data, headers=self.headers)
