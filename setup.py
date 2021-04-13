@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="python-fireplan",
-    version="0.0.9",
+    version="0.1.0",
     author="bouni",
     author_email="bouni@owee.de",
     description="python wrapper for fireplan API",

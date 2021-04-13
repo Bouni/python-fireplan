@@ -15,9 +15,12 @@ A python package around the public [fireplan](https://www.fireplan.de/) API.
 ```python
 import fireplan
 
-token = "ABCDEF...."
+# Fireplan Registration ID
+secret = "B75C394B-624526A5"
+# Your Division
+division = "Musterhausen"
 
-fp = fireplan.Fireplan(token)
+fp = fireplan.Fireplan(secret, division)
 
 alarmdata =  {
     "alarmtext": "",
@@ -44,9 +47,11 @@ fp.alarm(alarmdata)
 ```python
 import fireplan
 
-token = "ABCDEF...."
+secret = "B75C394B-624526A5"
+# Your Division
+division = "Musterhausen"
 
-fp = fireplan.Fireplan(token)
+fp = fireplan.Fireplan(secret, division)
 
 statusdata = {
     "FZKennung": "40225588996", 
