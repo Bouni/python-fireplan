@@ -13,7 +13,7 @@ class Fireplan:
     def __init__(self, secret, division):
         self._secret = secret
         self._division = division
-        self._token = None
+        logger.debug(f"Initialisierung mit Registration ID {secret} und Abteilung {division}")
         self.headers = {
             "utoken": None,
             "content-type": "application/json",
@@ -26,16 +26,16 @@ class Fireplan:
         headers = {
             "cxsecret": self._secret,
             "abteilung": self._division,
-            "content-type": "application/json",
         }
         r = requests.get(url, headers=headers)
-        if r.status_code == requests.codes.ok:
+        if r.status_code == requests.codes.ok and r.text:
             logger.info(f"User Token erfolgreich generiert!")
-            logger.debug(f"Token: {r.json()}")
-            self.headers["utoken"] = r.json()
+            logger.debug(f"Token: {r.text}")
+            self.headers["utoken"] = r.text
             logger.debug(f"Headers: {self.headers}")
         else:
             logger.error(f"Fehler beim generieren des User Token!")
+            logger.error(r.status_code)
             logger.error(r.text)
 
     def alarm(self, data):
