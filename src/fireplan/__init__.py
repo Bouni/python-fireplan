@@ -26,12 +26,14 @@ class Fireplan:
         headers = {
             "cxsecret": self._secret,
             "abteilung": self._division,
+            "content-type": "application/json",
         }
         r = requests.get(url, headers=headers)
         if r.status_code == requests.codes.ok:
             logger.info(f"User Token erfolgreich generiert!")
-            logger.debug(f"Token: {r.text}")
-            self.headers["utoken"] = r.text
+            logger.debug(f"Token: {r.json()}")
+            self.headers["utoken"] = r.json()
+            logger.debug(f"Headers: {self.headers}")
         else:
             logger.error(f"Fehler beim generieren des User Token!")
             logger.error(r.text)
