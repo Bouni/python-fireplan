@@ -8,6 +8,7 @@ setuptools.setup(
     version="0.1.1",
     author="bouni",
     author_email="bouni@owee.de",
+    license="MIT",
     description="python wrapper for fireplan API",
     long_description=long_description,
     long_description_content_type="text/markdown",
