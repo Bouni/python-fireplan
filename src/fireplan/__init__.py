@@ -30,6 +30,7 @@ class Fireplan:
         r = requests.get(url, headers=headers)
         if r.status_code == requests.codes.ok:
             logger.info(f"User Token erfolgreich generiert!")
+            logger.debug(f"Token: {r.text}")
             self.headers["utoken"] = r.text
         else:
             logger.error(f"Fehler beim generieren des User Token!")
