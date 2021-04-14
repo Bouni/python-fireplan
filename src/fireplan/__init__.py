@@ -31,7 +31,8 @@ class Fireplan:
         if r.status_code == requests.codes.ok and r.text:
             logger.info(f"User Token erfolgreich generiert!")
             logger.debug(f"Token: {r.text}")
-            self.headers["utoken"] = r.text
+            # This is a hack because we get the token back wrapped in ""
+            self.headers["utoken"] = r.text[1:-1]
             logger.debug(f"Headers: {self.headers}")
         else:
             logger.error(f"Fehler beim generieren des User Token!")
