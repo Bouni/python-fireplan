@@ -32,7 +32,10 @@ class Fireplan:
             logger.info(f"User Token erfolgreich generiert!")
             logger.debug(f"Token: {r.text}")
             # This is a hack because we get the token back wrapped in ""
-            self.headers["utoken"] = r.text[1:-1]
+            if r.text.startswith('"'):
+                self.headers["utoken"] = r.text[1:-1]
+            else:
+                self.headers["utoken"] = r.text
             logger.debug(f"Headers: {self.headers}")
         else:
             logger.error(f"Fehler beim generieren des User Token!")
