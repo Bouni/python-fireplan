@@ -24,6 +24,3 @@ jobs:
       - uses: astral-sh/ruff-action@v1
         with:
           args: check
-          src: 
-            - "fireplan"
-            - "tests"
