@@ -1,6 +1,17 @@
-[build-system]
-requires = [
-    "setuptools>=42",
-    "wheel"
+[project]
+name = "python-fireplan"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "cerberus>=1.3.5",
+    "requests>=2.32.3",
 ]
-build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+dev = [
+    "logassert>=7",
+    "pytest>=8.3.3",
+    "requests-mock>=1.12.1",
+]

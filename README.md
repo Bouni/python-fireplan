@@ -13,14 +13,14 @@ A python package around the public [fireplan](https://www.fireplan.de/) API.
 ### Alarm
 
 ```python
-import fireplan
+from fireplan import Fireplan
 
 # Fireplan Registration ID
 secret = "B75C394B-624526A5"
 # Your Division
 division = "Musterhausen"
 
-fp = fireplan.Fireplan(secret, division)
+fp = Fireplan(secret, division)
 
 alarmdata =  {
     "alarmtext": "",
@@ -45,13 +45,13 @@ fp.alarm(alarmdata)
 ### Status
 
 ```python
-import fireplan
+from fireplan import Fireplan
 
 secret = "B75C394B-624526A5"
 # Your Division
 division = "Musterhausen"
 
-fp = fireplan.Fireplan(secret, division)
+fp = Fireplan(secret, division)
 
 statusdata = {
     "FZKennung": "40225588996", 
