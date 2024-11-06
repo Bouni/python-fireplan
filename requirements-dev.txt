@@ -1,4 +1,0 @@
-logassert==7
-pytest==8.2.1
--e file://.
-requests-mock==1.12.1
