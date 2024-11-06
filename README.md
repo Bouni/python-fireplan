@@ -60,3 +60,11 @@ statusdata = {
 
 fp.status(statusdata)
 ```
+
+## Testing
+
+```sh
+source .venv/bin/activate # activate venv
+
+python -m pytest # run tests
+```
