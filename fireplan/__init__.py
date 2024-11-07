@@ -1,25 +1,25 @@
 import logging
 import requests
-import cerberus
-from fireplan.schemas import ALARM_SCHEMA, STATUS_SCHEMA
+from pydantic import ValidationError
+from fireplan.models import AlarmdataModel, StatusdataModel
 
 logger = logging.getLogger(__name__)
 
 
 class Fireplan:
-
     BASE_URL = "https://fireplanapi.azurewebsites.net/api/"
 
     def __init__(self, secret, division):
         self._secret = secret
         self._division = division
-        logger.debug(f"Initialisierung mit Registration ID {secret} und Abteilung {division}")
+        logger.debug(
+            f"Initialisierung mit Registration ID {secret} und Abteilung {division}"
+        )
         self.headers = {
             "utoken": None,
             "content-type": "application/json",
         }
         self._get_token()
-        self.validator = cerberus.Validator(purge_unknown=True)
 
     def _get_token(self):
         url = f"{self.BASE_URL}registerV2"
@@ -28,7 +28,7 @@ class Fireplan:
             "abteilung": self._division,
         }
         r = requests.get(url, headers=headers)
-        if r.status_code == requests.codes.ok and r.text:
+        if r.ok:
             logger.info("User Token erfolgreich generiert!")
             logger.debug(f"Token: {r.text}")
             # This is a hack because we get the token back wrapped in ""
@@ -44,18 +44,23 @@ class Fireplan:
 
     def alarm(self, data):
         url = f"{self.BASE_URL}Alarmierung"
-        self.validator.validate(data, ALARM_SCHEMA, update=True)
-        data = self.validator.document
-        self.validator.validate(data, ALARM_SCHEMA)
-        for error in self.validator.errors:
-            logger.warning(
-                f"Fehler in den Alarmdaten, '{error}' ist falsch formatiert und wird daher auf \"\" gesetzt!"
-            )
-            data[error] = ""
+        try:
+            data = AlarmdataModel(**data)
+            data = data.model_dump()
+        except ValidationError as e:
+            for error in e.errors():
+                logger.info(
+                    f"Validation error: {error['loc'][0]}, {error['msg']}, value was {error['input']}"
+                )
+            logger.error("Alarm übermittlung auf Grund fehlerhafter Daten abgebrochen!")
+            return False
+        if not any(data.values()):
+            logger.error("Alarm übermittlung abgebrochen da alle Werte leer sind!")
+            return False
         logger.debug("Alarmdaten:")
         logger.debug(data)
         r = requests.post(url, json=data, headers=self.headers)
-        if r.text == "200":
+        if r.ok:
             logger.info("Alarm erfolgreich gesendet")
             logger.info(f"Status code: {r.status_code}")
             logger.info(f"Text: {r.text}")
@@ -67,19 +72,21 @@ class Fireplan:
 
     def status(self, data):
         url = f"{self.BASE_URL}FMS"
-        logger.info(f"input data: {data}")
-        valid = self.validator.validate(data, STATUS_SCHEMA)
-        logger.info(f"validation: {valid}")
-        logger.info(f"document: {self.validator.document}")
-        for error in self.validator.errors:
-            logger.warning(
-                f"Fehler in den Statusdaten, der Wert von '{error}' ist ungültig!"
-            )
-        if self.validator.errors:
+        try:
+            data = StatusdataModel(**data)
+            data = data.model_dump()
+        except ValidationError as e:
+            for error in e.errors():
+                logger.info(
+                    f"Validation error: {error['loc'][0]}, {error['msg']}, value was {error['input']}"
+                )
             logger.error(
                 "Status übermittlung auf Grund fehlerhafter Daten abgebrochen!"
             )
-            return
+            return False
+        if not any(data.values()):
+            logger.error("Status übermittlung abgebrochen da alle Werte leer sind!")
+            return False
         logger.debug("Statusdaten:")
         logger.debug(data)
         r = requests.put(url, json=data, headers=self.headers)

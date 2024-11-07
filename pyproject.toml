@@ -1,11 +1,13 @@
 [project]
 name = "python-fireplan"
 version = "0.1.0"
-description = "Add your description here"
+description = "A python package for the public fireplan API."
+authors = [{name = "bouni", email = "bouni-github@owee.de"}]
+license = {file = "LICENSE"}
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "cerberus>=1.3.5",
+    "pydantic>=2.9.2",
     "requests>=2.32.3",
 ]
 
@@ -14,4 +16,10 @@ dev = [
     "logassert>=7",
     "pytest>=8.3.3",
     "requests-mock>=1.12.1",
+    "ruff>=0.7.2",
 ]
+
+[project.urls]
+Homepage = "https://github.com/Bouni/python-fireplan"
+Repository = "https://github.com/Bouni/python-fireplan.git"
+Issues = "https://github.com/Bouni/python-fireplan/issues"
