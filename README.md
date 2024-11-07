@@ -1,8 +1,8 @@
-# fireplan
+# python-fireplan
 
 [![Run tests and lint](https://github.com/Bouni/python-fireplan/actions/workflows/test-and-lint.yaml/badge.svg)](https://github.com/Bouni/python-fireplan/actions/workflows/test-and-lint.yaml)
 
-A python package around the public [fireplan](https://www.fireplan.de/) API.
+A python package around the public [fireplan](https://data.fireplan.de/swagger/index.html) API.
 
 ## Installation
 
