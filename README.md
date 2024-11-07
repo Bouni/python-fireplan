@@ -1,6 +1,6 @@
 # fireplan
 
-![Status](https://github.com/Bouni/python-fireplan/actions/workflows/run-tests.yml/badge.svg)
+[![Run tests and lint](https://github.com/Bouni/python-fireplan/actions/workflows/test-and-lint.yaml/badge.svg)](https://github.com/Bouni/python-fireplan/actions/workflows/test-and-lint.yaml)
 
 A python package around the public [fireplan](https://www.fireplan.de/) API.
 
