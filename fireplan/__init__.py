@@ -7,6 +7,8 @@ logger = logging.getLogger(__name__)
 
 
 class Fireplan:
+    """A wrapper for the public fireplan API."""
+
     BASE_URL = "https://fireplanapi.azurewebsites.net/api/"
 
     def __init__(self, secret, division):
@@ -21,7 +23,8 @@ class Fireplan:
         }
         self._get_token()
 
-    def _get_token(self):
+    def _get_token(self) -> None:
+        """Retrieve API token."""
         url = f"{self.BASE_URL}registerV2"
         headers = {
             "cxsecret": self._secret,
@@ -42,7 +45,8 @@ class Fireplan:
             logger.error(r.status_code)
             logger.error(r.text)
 
-    def alarm(self, data):
+    def alarm(self, data: dict) -> bool:
+        """Send alarm data to the API."""
         url = f"{self.BASE_URL}Alarmierung"
         try:
             data = AlarmdataModel(**data)
@@ -70,7 +74,8 @@ class Fireplan:
             logger.error(f"Error text: {r.text}")
         return r.ok
 
-    def status(self, data):
+    def status(self, data: dict) -> bool:
+        """Send FMS status data to the API."""
         url = f"{self.BASE_URL}FMS"
         try:
             data = StatusdataModel(**data)
