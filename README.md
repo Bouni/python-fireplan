@@ -68,3 +68,10 @@ source .venv/bin/activate # activate venv
 
 python -m pytest # run tests
 ```
+
+## Notice of Non-Affiliation and Disclaimer
+
+We are not affiliated, associated, authorized, endorsed by, or in any way officially connected with Fireplan, or any of its subsidiaries or its affiliates. The official Fireplan website can be found at https://www.fireplan.de.
+
+The name Fireplan as well as related names, marks, emblems and images are registered trademarks of their respective owners.
+
