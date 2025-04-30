@@ -3,7 +3,7 @@ name = "python-fireplan"
 version = "0.3.1"
 description = "A python package for the public fireplan API."
 authors = [{name = "bouni", email = "bouni-github@owee.de"}]
-license = {file = "LICENSE"}
+license-files = ["LICENSE*"]
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
