@@ -7,11 +7,8 @@ Ein Python Modul um die Öffentliche [fireplan](https://data.fireplan.de/swagger
 
 ## Installation
 
-Es wird empfohlen [uv](https://docs.astral.sh/uv/) zu nutzen.
-
 ```sh
-uv venv
-uv sync
+pip install python-fireplan
 ```
 
 ## Verwendung
