@@ -1,6 +1,6 @@
 [project]
 name = "python-fireplan"
-version = "0.3.1"
+version = "0.3.2"
 description = "A python package for the public fireplan API."
 authors = [{name = "bouni", email = "bouni-github@owee.de"}]
 license-files = ["LICENSE*"]
