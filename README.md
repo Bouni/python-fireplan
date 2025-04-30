@@ -1,5 +1,6 @@
 # python-fireplan
 
+[![PyPI version](https://img.shields.io/pypi/v/python-fireplan)](https://pypi.org/project/python-fireplan[![PyPI version](https://img.shields.io/pypi/v/mkdocs-badges)](https://pypi.org/project/mkdocs-badges/)/)
 [![Run tests and lint](https://github.com/Bouni/python-fireplan/actions/workflows/test-and-lint.yaml/badge.svg)](https://github.com/Bouni/python-fireplan/actions/workflows/test-and-lint.yaml)
 
 Ein Python Modul um die Öffentliche [fireplan](https://data.fireplan.de/swagger/index.html) API.
