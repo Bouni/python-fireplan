@@ -23,3 +23,6 @@ dev = [
 Homepage = "https://github.com/Bouni/python-fireplan"
 Repository = "https://github.com/Bouni/python-fireplan.git"
 Issues = "https://github.com/Bouni/python-fireplan/issues"
+
+[tool.pytest.ini_options]
+pythonpath = "src"
