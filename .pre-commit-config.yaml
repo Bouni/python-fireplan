@@ -1,0 +1,21 @@
+---
+repos:
+    - repo: https://github.com/astral-sh/ruff-pre-commit
+      rev: v0.14.14
+      hooks:
+          - id: ruff
+            args: [--fix]
+          - id: ruff-format
+    - repo: https://github.com/adrienverge/yamllint.git
+      rev: v1.38.0 # or higher tag
+      hooks:
+          - id: yamllint
+            args: [--format, parsable]
+    - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
+      rev: 0.2.3 # or other specific tag
+      hooks:
+          - id: yamlfmt
+    - repo: https://github.com/albertas/deadcode
+      rev: 2.4.1
+      hooks:
+          - id: deadcode
