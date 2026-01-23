@@ -1,6 +1,6 @@
 name: Publish Python 🐍 distribution 📦 to PyPI
 
-on: 
+on:
   release:
     types: [published]
 
@@ -10,36 +10,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v6
-    - name: Set up Python
-      uses: astral-sh/setup-uv@v7
-    - name: Build a binary wheel and a source tarball
-      run: uv build
-    - name: Store the distribution packages
-      uses: actions/upload-artifact@v6
-      with:
-        name: python-package-distributions
-        path: dist/
+      - uses: actions/checkout@v6
+      - name: Set up Python
+        uses: astral-sh/setup-uv@v7
+      - name: Build a binary wheel and a source tarball
+        run: uv build
+      - name: Store the distribution packages
+        uses: actions/upload-artifact@v6
+        with:
+          name: python-package-distributions
+          path: dist/
 
   publish-to-pypi:
     name: >-
       Publish Python 🐍 distribution 📦 to PyPI
-    if: startsWith(github.ref, 'refs/tags/')  # only publish to PyPI on tag pushes
+    if: startsWith(github.ref, 'refs/tags/') # only publish to PyPI on tag pushes
     needs:
-    - build
+      - build
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/python-fireplan 
+      url: https://pypi.org/p/python-fireplan
     permissions:
-      id-token: write  # IMPORTANT: mandatory for trusted publishing
+      id-token: write # IMPORTANT: mandatory for trusted publishing
 
     steps:
-    - name: Download all the dists
-      uses: actions/download-artifact@v7
-      with:
-        name: python-package-distributions
-        path: dist/
-    - name: Publish distribution 📦 to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
-
+      - name: Download all the dists
+        uses: actions/download-artifact@v7
+        with:
+          name: python-package-distributions
+          path: dist/
+      - name: Publish distribution 📦 to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
