@@ -84,7 +84,7 @@ def test_add_event_invalid_data(mock_validate, mock_handle, fireplan):
     mock_validate.return_value = {}
     mock_handle.return_value = {}
     result = fireplan.add_event({"invalid": "data"})
-    assert result == {}
+    assert result is False
     mock_validate.assert_called_once()
     mock_handle.assert_called_once_with("POST", "Termine", {})
 
