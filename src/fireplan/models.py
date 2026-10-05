@@ -1,18 +1,21 @@
+from datetime import datetime
+
 from pydantic import BaseModel, Field
 
 
 class AlarmDataModel(BaseModel):
-    ric: str = Field(default="")
-    subRIC: str = Field(default="")
-    einsatznrlst: str = Field(default="")
+    ric: str
+    subRIC: str
+    einsatznrlst: str
     strasse: str = Field(default="")
     hausnummer: str = Field(default="")
     ort: str = Field(default="")
     ortsteil: str = Field(default="")
     objektname: str = Field(default="")
     koordinaten: str = Field(default="")
-    einsatzstichwort: str = Field(default="")
-    zusatzinfo: str = Field(default="")
+    einsatzstichwort: str
+    # The API truncates zusatzinfo after 512 characters
+    zusatzinfo: str = Field(default="", max_length=512)
 
 
 class OperationDataModel(BaseModel):
@@ -23,30 +26,29 @@ class OperationDataModel(BaseModel):
     an: str = Field(default="")
     standort: str = Field(default="")
     typ: str = Field(default="")
-    timestamp: str = Field(
-        pattern=r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$", default=""
-    )
+    timestamp: datetime
 
 
 class FMSStatusDataModel(BaseModel):
     fzKennung: str = Field(default="")
     status: str = Field(default="")
-    statusTime: str = Field(
-        pattern=r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$", default=""
-    )
+    statusTime: datetime
 
 
 class EventDataModel(BaseModel):
-    startDate: str = Field(
-        pattern=r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$", default=""
-    )
-    endDate: str = Field(
-        pattern=r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$", default=""
-    )
-    allDay: bool
-    subject: str
-    location: str
-    description: str
-    jahr: str
-    monat: str
+    startDate: str | None = None
+    endDate: str | None = None
+    allDay: bool = False
+    subject: str = Field(default="")
+    location: str = Field(default="")
+    description: str = Field(default="")
+    jahr: str | None = None
+    monat: str | None = None
     kalenderID: int
+
+
+class SMSInboundDataModel(BaseModel):
+    tstamp: str | None = None
+    sender: str | None = None
+    text: str | None = None
+    modem: str | None = None

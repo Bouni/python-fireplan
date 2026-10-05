@@ -5,6 +5,7 @@ import pytest
 from requests.exceptions import Timeout
 
 from fireplan import Fireplan
+from fireplan.models import AlarmDataModel, FMSStatusDataModel
 
 
 @pytest.fixture
@@ -60,10 +61,92 @@ def test_handle_request_json_decode_error(mock_request, fireplan):
     assert result == {}
 
 
-def test_send_inbound_sms_not_implemented(fireplan, caplog):
-    result = fireplan.send_inbound_sms({"message": "test"})
-    assert result is False
-    assert "Not implemented" in caplog.text
+@patch("fireplan.fireplan.Fireplan._handle_request")
+def test_send_inbound_sms(mock_handle, fireplan):
+    mock_handle.return_value = {"status": "ok"}
+    result = fireplan.send_inbound_sms({"sender": "+491234", "text": "Hallo"})
+    assert result == {"status": "ok"}
+    mock_handle.assert_called_once_with(
+        "POST",
+        "SMSInbound",
+        {"tstamp": None, "sender": "+491234", "text": "Hallo", "modem": None},
+    )
+
+
+@patch("fireplan.fireplan.requests.request")
+def test_expired_token_is_renewed(mock_request, fireplan):
+    register_ok = MagicMock(ok=True, status_code=200)
+    register_ok.json.return_value = {"utoken": "first-token"}
+    expired = MagicMock(ok=False, status_code=401)
+    register_again = MagicMock(ok=True, status_code=200)
+    register_again.json.return_value = {"utoken": "second-token"}
+    calendar = MagicMock(ok=True, status_code=200)
+    calendar.json.return_value = [{"id": 1}]
+    mock_request.side_effect = [register_ok, expired, register_again, calendar]
+
+    assert fireplan.register("my-division") is True
+    result = fireplan.get_calendar()
+    assert result == [{"id": 1}]
+    assert fireplan.headers["API-Token"] == "second-token"
+    assert mock_request.call_count == 4
+
+
+@patch("fireplan.fireplan.requests.request")
+def test_expired_token_renewal_fails(mock_request, fireplan):
+    register_ok = MagicMock(ok=True, status_code=200)
+    register_ok.json.return_value = {"utoken": "first-token"}
+    expired = MagicMock(ok=False, status_code=401)
+    mock_request.side_effect = [register_ok, expired, expired]
+
+    assert fireplan.register("my-division") is True
+    assert fireplan.get_calendar() is False
+    assert mock_request.call_count == 3
+
+
+ALARM = {
+    "ric": "1234567",
+    "subRIC": "A",
+    "einsatznrlst": "20250429001",
+    "einsatzstichwort": "Probealarm",
+}
+
+
+def test_alarm_requires_mandatory_fields(fireplan):
+    assert fireplan._validate({"ric": "1234567"}, AlarmDataModel) == {}
+    assert fireplan._validate(ALARM, AlarmDataModel)["ric"] == "1234567"
+
+
+def test_timestamp_is_serialized(fireplan):
+    data = fireplan._validate(
+        {"fzKennung": "1", "status": "2", "statusTime": "2025-04-29T14:08:22.030Z"},
+        FMSStatusDataModel,
+    )
+    assert data["statusTime"] == "2025-04-29T14:08:22.030000Z"
+    assert fireplan._validate({"fzKennung": "1"}, FMSStatusDataModel) == {}
+
+
+@patch("fireplan.fireplan.Fireplan._handle_request")
+def test_send_alarms(mock_handle, fireplan):
+    mock_handle.return_value = {"status": "ok"}
+    result = fireplan.send_alarms([ALARM, ALARM])
+    assert result == {"status": "ok"}
+    method, endpoint, data = mock_handle.call_args.args
+    assert (method, endpoint, len(data)) == ("PUT", "Alarmierung", 2)
+
+
+@patch("fireplan.fireplan.Fireplan._handle_request")
+def test_send_alarms_invalid(mock_handle, fireplan):
+    assert fireplan.send_alarms([ALARM, {"ric": "1"}]) is False
+    assert fireplan.send_alarms([]) is False
+    mock_handle.assert_not_called()
+
+
+@patch("fireplan.fireplan.Fireplan._handle_request")
+def test_get_personnel_records(mock_handle, fireplan):
+    mock_handle.return_value = [{"name": "Max"}]
+    result = fireplan.get_personnel_records("Mein-Standort")
+    assert result == [{"name": "Max"}]
+    mock_handle.assert_called_once_with("GET", "Personalakten/Mein-Standort")
 
 
 @patch("fireplan.fireplan.Fireplan._handle_request")
