@@ -179,15 +179,6 @@ wheels = [
 ]
 
 [[package]]
-name = "logassert"
-version = "8.6"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/89/92/478b104834bfbb1cb69180882ada8f3a8853f5fa53d84c972338b2b6a60a/logassert-8.6.tar.gz", hash = "sha256:6fcbef322a1b8d2496042c394e1f3eb31826bb53d5c1a92252849c74ed1d6d9b", size = 22070, upload-time = "2025-08-14T17:12:52.243Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/44/c6/2f1c303a0995d89e8e95c297e84656d2fd8af84ed40551a2c93542dffc82/logassert-8.6-py3-none-any.whl", hash = "sha256:b3d276fe4995edeccce5457b249ecd60b393dd072d42fdc955d90da532c4e854", size = 18621, upload-time = "2025-08-14T17:12:50.703Z" },
-]
-
-[[package]]
 name = "packaging"
 version = "26.3"
 source = { registry = "https://pypi.org/simple" }
@@ -331,9 +322,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "logassert" },
     { name = "pytest" },
-    { name = "requests-mock" },
     { name = "ruff" },
 ]
 
@@ -345,9 +334,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "logassert", specifier = ">=7" },
     { name = "pytest", specifier = ">=8.3.3" },
-    { name = "requests-mock", specifier = ">=1.12.1" },
     { name = "ruff", specifier = ">=0.7.2" },
 ]
 
@@ -364,18 +351,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ac/c3/e2a2b89f2d3e2179abd6d00ebd70bff6273f37fb3e0cc209f48b39d00cbf/requests-2.34.2.tar.gz", hash = "sha256:f288924cae4e29463698d6d60bc6a4da69c89185ad1e0bcc4104f584e960b9ed", size = 142856, upload-time = "2026-05-14T19:25:27.735Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a0/f4/c67b0b3f1b9245e8d266f0f112c500d50e5b4e83cb6f3b71b6528104182a/requests-2.34.2-py3-none-any.whl", hash = "sha256:2a0d60c172f83ac6ab31e4554906c0f3b3588d37b5cb939b1c061f4907e278e0", size = 73075, upload-time = "2026-05-14T19:25:26.443Z" },
-]
-
-[[package]]
-name = "requests-mock"
-version = "1.12.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "requests" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/92/32/587625f91f9a0a3d84688bf9cfc4b2480a7e8ec327cefd0ff2ac891fd2cf/requests-mock-1.12.1.tar.gz", hash = "sha256:e9e12e333b525156e82a3c852f22016b9158220d2f47454de9cae8a77d371401", size = 60901, upload-time = "2024-03-29T03:54:29.446Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/97/ec/889fbc557727da0c34a33850950310240f2040f3b1955175fdb2b36a8910/requests_mock-1.12.1-py2.py3-none-any.whl", hash = "sha256:b1e37054004cdd5e56c84454cc7df12b25f90f382159087f4b6915aaeef39563", size = 27695, upload-time = "2024-03-29T03:54:27.64Z" },
 ]
 
 [[package]]

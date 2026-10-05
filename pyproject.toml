@@ -13,9 +13,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "logassert>=7",
     "pytest>=8.3.3",
-    "requests-mock>=1.12.1",
     "ruff>=0.7.2",
 ]
 
