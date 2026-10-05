@@ -25,6 +25,9 @@ fp = Fireplan("Mein-API-Key")
 fp.register("Mein-Standort")
 ```
 
+> [!NOTE]  
+> Das API-Token ist zeitlich begrenzt. Läuft es ab, wird es automatisch über den Register Endpoint erneuert.
+
 ### Alarm senden
 
 ```python
@@ -42,6 +45,18 @@ fp.send_alarm({
   "zusatzinfo": "Was ist denn da los?"
 })
 ```
+
+### Mehrere Alarme senden
+
+```python
+fp.send_alarms([
+  {"ric": "1234567", "subRIC": "A", "einsatznrlst": "20250429001", "einsatzstichwort": "Probealarm"},
+  {"ric": "7654321", "subRIC": "B", "einsatznrlst": "20250429001", "einsatzstichwort": "Probealarm"},
+])
+```
+
+> [!NOTE]  
+> `ric`, `subRIC`, `einsatznrlst` und `einsatzstichwort` sind Pflichtfelder, `zusatzinfo` darf maximal 512 Zeichen lang sein.
 
 ### Einsatzliste abrufen
 
@@ -89,10 +104,22 @@ fp.set_fms_status({
 calendar = fp.get_calendar()
 ```
 
+### Personalakten abrufen
+
+```python
+personnel = fp.get_personnel_records("Mein-Standort")
+```
+
 ### Inbound SMS
 
-> [!IMPORTANT]  
-> Dieser API Endpoint ist momentan noch nicht implementiert. 
+```python
+fp.send_inbound_sms({
+  "tstamp": "2025-04-29T14:08:22",
+  "sender": "+491701234567",
+  "text": "Einsatz XY",
+  "modem": "1"
+})
+```
 
 ### Sonstige Dienste abrufen
 

@@ -10,6 +10,7 @@ from fireplan.models import (
     EventDataModel,
     FMSStatusDataModel,
     OperationDataModel,
+    SMSInboundDataModel,
 )
 
 logger = logging.getLogger(__name__)
@@ -23,6 +24,7 @@ class Fireplan:
     def __init__(self, apikey: str):
         self._apikey = apikey
         self._apitoken = None
+        self._division = None
         self.headers = {
             "content-type": "application/json",
         }
@@ -45,7 +47,8 @@ class Fireplan:
         endpoint: str,
         data: dict | None = None,
         headers: dict | None = None,
-    ) -> dict | bool:
+        retry: bool = True,
+    ) -> dict | list | bool:
         """Send a post request to the Fireplan API."""
         url = f"{self.BASE_URL}{endpoint}"
         data = data if data is not None else {}
@@ -67,6 +70,11 @@ class Fireplan:
         except requests.exceptions.RequestException as err:
             logger.error(f"Etwas ist schief gelaufen: {err}")
             return {}
+        # The API token expires, renew it once via Register and retry
+        if response.status_code == 401 and retry and self._division:
+            logger.info(f"[{endpoint}] API-Token abgelaufen, registriere neu")
+            if self.register(self._division):
+                return self._handle_request(method, endpoint, data, headers, False)
         self._log_result(endpoint, response)
         if response.ok:
             try:
@@ -90,7 +98,7 @@ class Fireplan:
         """Validate raw data with a given model."""
         try:
             data = model(**raw_data)
-            data = data.model_dump()
+            data = data.model_dump(mode="json")
         except ValidationError as e:
             for error in e.errors():
                 logger.error(
@@ -102,9 +110,13 @@ class Fireplan:
     def register(self, division: str) -> bool:
         """Register a division and get an API key for it."""
         data = self._handle_request(
-            "GET", f"Register/{division}", headers={"API-Key": self._apikey}
+            "GET",
+            f"Register/{division}",
+            headers={"API-Key": self._apikey},
+            retry=False,
         )
         if isinstance(data, dict) and data:
+            self._division = division
             self._apitoken = data["utoken"]
             self.headers["API-Token"] = self._apitoken
             return True
@@ -118,10 +130,21 @@ class Fireplan:
             return False
         return self._handle_request("POST", "Alarmierung", data)
 
+    @_log_api_result("Alarmierung")
+    def send_alarms(self, alarms: list[dict]) -> dict | bool:
+        """Send a list of alarms to the API."""
+        data = [self._validate(alarm, AlarmDataModel) for alarm in alarms]
+        if not data or not all(data):
+            return False
+        return self._handle_request("PUT", "Alarmierung", data)
+
     @_log_api_result("Einsatzliste")
     def get_operations_list(self, year: int) -> dict | bool:
         """Get list of operations for a given year from the API."""
-        return self._handle_request("GET", f"Einsatzliste/{year}")
+        data = self._handle_request("GET", f"Einsatzliste/{year}")
+        if not data:
+            return False
+        return data
 
     @_log_api_result("Einsatztagebuch")
     def get_operations_log(self, operation_number: str, location: str) -> dict | bool:
@@ -159,10 +182,21 @@ class Fireplan:
             return False
         return data
 
-    def send_inbound_sms(self, data: dict) -> bool:
+    @_log_api_result("Personalakten")
+    def get_personnel_records(self, location: str) -> dict | bool:
+        """Get personnel records for a given location from the API."""
+        data = self._handle_request("GET", f"Personalakten/{location}")
+        if not data:
+            return False
+        return data
+
+    @_log_api_result("SMSInbound")
+    def send_inbound_sms(self, data: dict) -> dict | bool:
         """Send inbound SMS data to the API."""
-        logger.warning("Not implemented")
-        return False
+        data = self._validate(data, SMSInboundDataModel)
+        if not data:
+            return False
+        return self._handle_request("POST", "SMSInbound", data)
 
     @_log_api_result("SonstigeDienste")
     def get_other_services(self, year: int) -> dict | bool:
